@@ -205,18 +205,12 @@ class prometheus (
       alerts   => $alerts_config,
     }
   }
-  $extra_rule_files = suffix(prefix(keys($extra_alerts), "${config_dir}/rules/"), '.rules')
 
-  if ! empty($alerts) {
-    ::prometheus::alerts { 'alert':
-      alerts   => $alerts,
-      location => $config_dir,
-    }
-    $_rule_files = concat(["${config_dir}/alert.rules"], $extra_rule_files)
-  }
-  else {
-    $_rule_files = $extra_rule_files
-  }
+  # Golang's globbing doesn't support globbing over multiple directories (i.e
+  # /opt/prometheus/rules/*/*.rules), so we have to specify the rule glob for
+  # each directory we are going to be placing in the rule directory.
+  # See https://github.com/golang/go/issues/11862
+  $_rule_files = prefix(suffix($ruleset_directories, '/*.rules'), "${::prometheus::config_dir}/rules/")
 
   anchor {'prometheus_first': }
   -> class { '::prometheus::install':
