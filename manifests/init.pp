@@ -145,7 +145,7 @@ class prometheus (
   String $config_template,
   String $config_mode,
   Hash $global_config,
-  Array $rule_files              = ['/opt/prometheus/rules'],
+  Array $rule_files,
   Array $scrape_configs,
   Array $remote_read_configs,
   Array $remote_write_configs,
@@ -206,19 +206,13 @@ class prometheus (
     }
   }
 
-  # Golang's globbing doesn't support globbing over multiple directories (i.e
-  # /opt/prometheus/rules/*/*.rules), so we have to specify the rule glob for
-  # each directory we are going to be placing in the rule directory.
-  # See https://github.com/golang/go/issues/11862
-  $_rule_files = prefix(suffix($rule_files, '/*.rules'), "${::prometheus::config_dir}/rules/")
-
   anchor {'prometheus_first': }
   -> class { '::prometheus::install':
     purge_config_dir => $purge_config_dir,
   }
   -> class { '::prometheus::config':
     global_config        => $global_config,
-    rule_files           => $_rule_files,
+    rule_files           => $rule_files,
     scrape_configs       => $scrape_configs,
     remote_read_configs  => $remote_read_configs,
     remote_write_configs => $remote_write_configs,
