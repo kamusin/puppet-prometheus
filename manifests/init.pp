@@ -145,7 +145,7 @@ class prometheus (
   String $config_template,
   String $config_mode,
   Hash $global_config,
-  Array $rule_files,
+  Array $rule_files              = ['/opt/prometheus/rules'],
   Array $scrape_configs,
   Array $remote_read_configs,
   Array $remote_write_configs,
