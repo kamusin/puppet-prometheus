@@ -210,7 +210,7 @@ class prometheus (
   # /opt/prometheus/rules/*/*.rules), so we have to specify the rule glob for
   # each directory we are going to be placing in the rule directory.
   # See https://github.com/golang/go/issues/11862
-  $_rule_files = prefix(suffix($ruleset_directories, '/*.rules'), "${::prometheus::config_dir}/rules/")
+  $_rule_files = prefix(suffix($rule_files, '/*.rules'), "${::prometheus::config_dir}/rules/")
 
   anchor {'prometheus_first': }
   -> class { '::prometheus::install':
