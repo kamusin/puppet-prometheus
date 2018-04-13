@@ -196,18 +196,6 @@ class prometheus (
       alerts   => $alerts_config,
     }
   }
-  $extra_rule_files = suffix(prefix(keys($extra_alerts), "${config_dir}/rules/"), '.rules')
-
-  if ! empty($alerts) {
-    ::prometheus::alerts { 'alert':
-      alerts   => $alerts,
-      location => $config_dir,
-    }
-    $_rule_files = concat(["${config_dir}/alert.rules"], $extra_rule_files)
-  }
-  else {
-    $_rule_files = $extra_rule_files
-  }
 
   anchor {'prometheus_first': }
   -> class { '::prometheus::install':
@@ -215,7 +203,7 @@ class prometheus (
   }
   -> class { '::prometheus::config':
     global_config        => $global_config,
-    rule_files           => $_rule_files,
+    rule_files           => $rule_files,
     scrape_configs       => $scrape_configs,
     remote_read_configs  => $remote_read_configs,
     remote_write_configs => $remote_write_configs,
